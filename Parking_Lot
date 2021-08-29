@@ -1,0 +1,194 @@
+#include <iostream>
+
+#include <string>
+#include <vector>
+#include <map>
+#include <set>
+#include <iterator>
+#include <sstream>
+
+using namespace std;
+
+class Slot{
+    public:
+    int slotID;
+    string regNo;
+    string color;
+    Slot(int slot,string reg,string color)
+    {
+        this->slotID = slot;
+        this->regNo = reg;
+        this->color = color;
+    }
+};
+
+class ParkingLot{
+    private:
+    int noOfSlots;
+    vector<Slot> slots;
+    set<int> nearest;
+    
+    bool isFull()
+    {
+        if(slots.size() == noOfSlots)
+            return true;
+        else
+            return false;
+    };
+    
+    int findNearestSlot()
+    {
+        set<int>::iterator it;
+        it = nearest.begin();
+        return *it;
+    };
+    
+    public:
+    ParkingLot(int n)
+    {
+        noOfSlots = n; 
+        for(int i=1; i<=n ; i++)
+            nearest.insert(i);
+    };
+    
+    void park(string regID, string color)
+    {
+        if(!isFull())
+        {
+            int nearestSpot = findNearestSlot();
+            slots.push_back(Slot(nearestSpot,regID,color));
+            nearest.erase(nearestSpot);
+            cout<<"Parked at "<<nearestSpot<<endl;
+        }
+        else
+            cout<<"Parking Lot is full"<<endl;
+    };
+    
+    void leave(int slot)
+    {
+        if(slot <= 0 || slot > noOfSlots)
+        {
+            cout<<"Invalid Slot Number"<<endl;
+            return;
+        }
+        
+        bool found = false;
+        
+        for(int i=0; i<slots.size() && !found; i++)
+        {
+            if(slots[i].slotID == slot)
+            {
+                found = true;
+                slots.erase(slots.begin() + i);
+                nearest.insert(slot);
+            }
+        }
+        
+        if(!found)
+        {
+            cout<<"Slot is Empty already"<<endl;
+        }
+    };
+    
+    void status()
+    {
+        cout<<"Slot No. RegID. Color."<<endl;
+        for(int i=0; i<slots.size(); i++)
+        {
+                cout<<slots[i].slotID<<" "<<slots[i].regNo<<" "<<slots[i].color<<endl;
+        }
+    }
+    
+    void getSlotsforColor(string Color)
+    {
+        bool found = false;
+        for(auto i: slots)
+        {
+            if(i.color == Color)
+            {
+                found = true;
+                cout<<i.slotID<<endl;
+            }
+        }
+        
+        if(!found)
+        {
+            cout<<"Couldn't find any car with "<<Color<<" Color"<<endl;
+        }
+    }
+    
+    void getSlotforRegNo(string regNo)
+    {
+        bool found = false;
+        for(auto i: slots)
+        {
+            if(i.regNo == regNo)
+            {
+                found = true;
+                cout<<i.slotID<<endl;
+            }
+        }
+        
+        if(!found)
+        {
+            cout<<"Couldn't find any car with "<<regNo<<" Reg No"<<endl;
+        }
+    }
+    
+    void getRegIdforColor(string Color)
+    {
+         bool found = false;
+        for(auto i: slots)
+        {
+            if(i.color == Color)
+            {
+                found = true;
+                cout<<i.regNo<<endl;
+            }
+        }
+        
+        if(!found)
+        {
+            cout<<"Couldn't find any car with "<<Color<<" Color"<<endl;
+        }
+    }
+};
+
+class StringParse{
+    public :
+    static void parseString(string &str , ParkingLot lot)
+    {
+         std::stringstream ss(str);
+         std::string s; 
+         char delim = ' ' ;
+            while (std::getline(ss, s, delim)) { 
+               cout<<s<<endl;
+            } 
+    }
+};
+int main()
+{
+    
+  ParkingLot myLot(5);
+  
+  string s;
+  getline(cin,s);
+  StringParse::parseString(s,myLot);    
+ 
+  myLot.park("af","white");
+  myLot.park("vc","white");
+  myLot.park("acv","black");
+  myLot.park("aasx","white");
+  myLot.status();
+  myLot.getSlotsforColor("white");
+  myLot.getSlotsforColor("black");
+  myLot.leave(1);
+  myLot.leave(3);
+  myLot.getSlotsforColor("white");
+  myLot.getSlotsforColor("black");
+  myLot.getSlotforRegNo("vc");
+  myLot.getSlotforRegNo("asda");
+  
+  
+  return 0;
+}
